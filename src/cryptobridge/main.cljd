@@ -1,0 +1,62 @@
+(ns cryptobridge.main
+  (:require
+   ["package:flutter/material.dart" :as m]
+   ["package:crypto/crypto.dart" :as crypto]
+   ["dart:convert" :as dart:convert]
+   [cljd.flutter :as f]))
+
+(defn main
+  []
+  (f/run
+    (m/MaterialApp
+      .debugShowCheckedModeBanner false
+      .theme (m/ThemeData .useMaterial3 true)
+      .title "CryptoBridge")
+    .home
+    (m/Scaffold .backgroundColor (.toColor (m/HSLColor.fromAHSL 1.0 34 0.92 0.98)))
+    .body
+    :managed [controller (m/TextEditingController .text "Hello world!")]
+    :padding 32
+    (m/Column
+      .mainAxisAlignment m/MainAxisAlignment.center
+      .mainAxisSize m/MainAxisSize.max,
+      .crossAxisAlignment m/CrossAxisAlignment.start)
+    .children
+    [(m/Text "Using Swift SDKs from ClojureDart"
+       .textAlign m/TextAlign.justify
+       .style (m/TextStyle
+                .fontSize 32
+                .fontWeight m/FontWeight.w500))
+
+     (m/SizedBox .height 32)
+     (m/TextField
+       .controller controller
+       .decoration (m/InputDecoration
+                     .contentPadding m/EdgeInsets.zero
+                     .prefixIcon (m/Icon m/Icons.search),
+                     .suffixIcon (m/IconButton
+                                   .icon (m/Icon m/Icons.clear)
+                                   .onPressed (fn [] (.clear controller))),
+
+                     .border (m/OutlineInputBorder)))
+     (m/SizedBox .height 32)
+     (m/Text "sha256 from CryptoKit (pure Swift SDK)"
+       .style (m/TextStyle
+                .fontWeight m/FontWeight.w700
+                .decoration m/TextDecoration.underline)
+       .textAlign m/TextAlign.left)
+     (f/widget
+       :padding {:top 8}
+       :watch [v controller :> .-text]
+       (m/Text "TO IMPLEMENT"))
+
+     (m/SizedBox .height 32)
+     (m/Text "sha256 from dart official crypto library:"
+       .style (m/TextStyle
+                .fontWeight m/FontWeight.w700
+                .decoration m/TextDecoration.underline)
+       .textAlign m/TextAlign.left)
+     (f/widget
+       :padding {:top 8}
+       :watch [v controller :> .-text]
+       (m/Text (str (-> v dart:convert/utf8.encode crypto/sha256.convert .-bytes))))]))
